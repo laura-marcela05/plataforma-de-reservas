@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "tipos_espacio" ALTER COLUMN "updatedAt" SET DEFAULT CURRENT_TIMESTAMP;

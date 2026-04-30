@@ -1,0 +1,19 @@
+# Dependencias
+node_modules/
+
+# Variables de entorno — NUNCA subir .env real a Git
+.env
+.env.local
+
+# Build outputs
+dist/
+.next/
+backend/tsconfig.build.tsbuildinfo
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

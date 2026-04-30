@@ -1,0 +1,110 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Usuario {
+  id          Int       @id @default(autoincrement())
+  nombre      String
+  apellido    String
+  correo      String    @unique
+  contrasena  String
+  telefono    String
+  membresiaId Int
+  membresia   Membresia @relation(fields: [membresiaId], references: [id])
+  reservas    Reserva[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("usuarios")
+}
+
+model Membresia {
+  id       Int       @id @default(autoincrement())
+  tipo     String    @unique
+  usuarios Usuario[]
+  tarifas  Tarifa[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("membresias")
+}
+
+model Sede {
+  id               Int       @id @default(autoincrement())
+  nombre           String    @unique
+  direccion        String
+  horarioApertura  String
+  horarioCierre    String
+  capacidadTotal   Int
+  espacios         Espacio[]
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@map("sedes")
+}
+
+model TipoEspacio {
+  id        Int       @id @default(autoincrement())
+  nombre    String    @unique
+  espacios  Espacio[]
+  tarifas   Tarifa[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+
+  @@map("tipos_espacio")
+}
+
+model Espacio {
+  id            Int         @id @default(autoincrement())
+  nombre        String
+  capacidad     Int
+  sedeId        Int
+  tipoEspacioId Int
+  sede          Sede        @relation(fields: [sedeId], references: [id])
+  tipoEspacio   TipoEspacio @relation(fields: [tipoEspacioId], references: [id])
+  reservas      Reserva[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([sedeId, nombre])
+  @@map("espacios")
+}
+
+model Tarifa {
+  id            Int         @id @default(autoincrement())
+  precioHora    Float
+  tipoEspacioId Int
+  membresiaId   Int
+  tipoEspacio   TipoEspacio @relation(fields: [tipoEspacioId], references: [id])
+  membresia     Membresia   @relation(fields: [membresiaId], references: [id])
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@unique([tipoEspacioId, membresiaId])
+  @@map("tarifas")
+}
+
+
+model Reserva {
+  id            Int      @id @default(autoincrement())
+  usuarioId     Int
+  espacioId     Int
+  fecha         DateTime @db.Date
+  horaInicio    DateTime @db.Time
+  horaFin       DateTime @db.Time
+  estado        String   @default("activa")
+  fechaCreacion DateTime @default(now())
+  usuario       Usuario  @relation(fields: [usuarioId], references: [id])
+  espacio       Espacio  @relation(fields: [espacioId], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("reservas")
+}
